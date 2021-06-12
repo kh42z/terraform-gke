@@ -6,13 +6,17 @@ resource "google_container_cluster" "primary" {
   initial_node_count       = 1
   network                  = google_compute_network.vpc.name
   subnetwork               = google_compute_subnetwork.subnet.name
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "services-range"
+    services_secondary_range_name = google_compute_subnetwork.custom.secondary_ip_range.1.range_name
+  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${google_container_cluster.primary.name}-node-pool"
   location   = var.region
   cluster    = google_container_cluster.primary.name
-  node_count = 1
+  node_count = var.node_count
 
   node_config {
     preemptible     = true
