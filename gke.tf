@@ -1,5 +1,5 @@
 resource "google_container_cluster" "primary" {
-  name     = "gke"
+  name     = "${local.project_prefix}-gke"
   location = var.region
 
   remove_default_node_pool = true
@@ -9,7 +9,7 @@ resource "google_container_cluster" "primary" {
 }
 
 resource "google_container_node_pool" "primary_nodes" {
-  name       = "${var.env}-${google_container_cluster.primary.name}-node-pool"
+  name       = "${google_container_cluster.primary.name}-node-pool"
   location   = var.region
   cluster    = google_container_cluster.primary.name
   node_count = 1
@@ -23,12 +23,13 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/monitoring",
       "https://www.googleapis.com/auth/cloud-platform",
     ]
-    labels = {
-      env = var.env
-    }
-    tags = ["gke-node", "${var.project_id}-gke"]
+    tags = ["gke-node", "${local.project_prefix}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"
+    }
+    labels = {
+      env     = var.env
+      project = var.project_id
     }
   }
 }
