@@ -7,8 +7,8 @@ resource "google_container_cluster" "primary" {
   network                  = google_compute_network.vpc.name
   subnetwork               = google_compute_subnetwork.subnet.name
   ip_allocation_policy {
-    cluster_secondary_range_name  = "services-range"
-    services_secondary_range_name = google_compute_subnetwork.custom.secondary_ip_range.1.range_name
+    cluster_secondary_range_name  = "pods-range"
+    services_secondary_range_name = "services-range"
   }
 }
 
