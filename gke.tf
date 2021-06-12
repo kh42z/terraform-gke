@@ -1,14 +1,15 @@
 resource "google_container_cluster" "primary" {
-  name     = "${local.project_prefix}-gke"
+  name     = "${local.cluster_prefix}-gke"
   location = var.region
 
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = google_compute_network.vpc.name
   subnetwork               = google_compute_subnetwork.subnet.name
+
   ip_allocation_policy {
-    cluster_secondary_range_name  = "pods-range"
-    services_secondary_range_name = "services-range"
+    cluster_ipv4_cidr_block = var.pods_range
+    services_ipv4_cidr_block = var.services_range
   }
 }
 
@@ -27,7 +28,7 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/monitoring",
       "https://www.googleapis.com/auth/cloud-platform",
     ]
-    tags = ["gke-node", "${local.project_prefix}-gke"]
+    tags = ["gke-node", "${local.cluster_prefix}-gke"]
     metadata = {
       disable-legacy-endpoints = "true"
     }

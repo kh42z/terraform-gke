@@ -1,3 +1,3 @@
 locals {
-  project_prefix = "${var.env}-${var.project_id}"
+  cluster_prefix = "${var.env}-${var.name}"
 }
